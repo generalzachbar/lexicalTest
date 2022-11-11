@@ -1,26 +1,17 @@
 import React from "react";
-import "./App.css";
+import "./App.scss";
 import Editor from "./Editor";
+import PlainTextEditor from "./PlainTextEditor";
 
 function App() {
     return (
         <div className="App">
             <Editor />
 
-            <div className="other">
+            {/* <div className="other">
                 <h2>Other Examples</h2>
-                <ul>
-                    <li>
-                        <a
-                            href="https://codesandbox.io/s/lexical-rich-text-example-5tncvy"
-                            target="_blank"
-                            rel="noreferrer"
-                        >
-                            Rich text example
-                        </a>
-                    </li>
-                </ul>
-            </div>
+                <PlainTextEditor />
+            </div> */}
         </div>
     );
 }
