@@ -25,6 +25,8 @@ import { OnChangePlugin } from "@lexical/react/LexicalOnChangePlugin";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import {$generateHtmlFromNodes, $generateNodesFromDOM } from "@lexical/html";
 import { $insertNodes } from "lexical";
+import TemplateVarPlugin from "./plugins/TemplateVarPlugin";
+import { TemplateVarNode, TEMPLATE_VAR } from "./nodes/TemplateVarNode";
 
 function Placeholder() {
   return <div className="editor-placeholder">Enter some rich text...</div>;
@@ -49,7 +51,8 @@ const editorConfig = {
     TableCellNode,
     TableRowNode,
     AutoLinkNode,
-    LinkNode
+    LinkNode,
+    TemplateVarNode
   ]
 };
 
@@ -75,7 +78,8 @@ export default function Editor() {
           <LinkPlugin />
           <AutoLinkPlugin />
           <ListMaxIndentLevelPlugin maxDepth={7} />
-          <MarkdownShortcutPlugin transformers={TRANSFORMERS} />
+          <MarkdownShortcutPlugin transformers={[...TRANSFORMERS, TEMPLATE_VAR]} />
+          <TemplateVarPlugin />
           {/* <OnChangePlugin onChange={handleOnChange}/> */}
         </div>
       </div>
