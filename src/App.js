@@ -1,25 +1,28 @@
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+import "./App.css";
+import Editor from "./Editor";
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    return (
+        <div className="App">
+            <Editor />
+
+            <div className="other">
+                <h2>Other Examples</h2>
+                <ul>
+                    <li>
+                        <a
+                            href="https://codesandbox.io/s/lexical-rich-text-example-5tncvy"
+                            target="_blank"
+                            rel="noreferrer"
+                        >
+                            Rich text example
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    );
 }
 
 export default App;
