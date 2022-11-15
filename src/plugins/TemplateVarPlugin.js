@@ -1,21 +1,121 @@
-import { $createTemplateVarNode } from "../nodes/TemplateVarNode";
+import {
+    $createTemplateVarNode,
+    $isTemplateVarNode,
+} from "../nodes/TemplateVarNode";
 import { useEffect } from "react";
-import { TextNode } from "lexical";
+import { TextNode, $createTextNode, $insertNodes } from "lexical";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 
-function templateVarTransform(node) {
-    const textContent = node.getTextContent();
-    // When you type [FIRST_NAME], we will replace it with an templateVar node
-    if (textContent === "[FIRST_NAME]") {
-        node.replace($createTemplateVarNode("First Name"));
+function templateVarTransform(node, templates) {
+    //let textContent = node.getTextContent();
+
+    const nodes = [node];
+    let isReplace = false;
+    let rerun = true;
+    let breakout = false;
+    while (rerun === true) {
+        rerun = false;
+        for (let outer = 0; outer < nodes.length; outer++) {
+            if (breakout === true) {
+                breakout = false;
+                break;
+            }
+            for (let index = 0; index < templates.length; index++) {
+                //templates.forEach((template) => {
+                let processedNodes = processTemplate(
+                    templates[index],
+                    nodes[outer]
+                );
+                if (processedNodes.length) {
+                    nodes.splice(outer, 1, ...processedNodes);
+                    rerun = true;
+                    isReplace = true;
+                    breakout = true;
+                    break;
+                    //replace the node with the processed nodes
+                    // processedNodes.forEach(node=>{
+
+                    // });
+                }
+            }
+            // });
+        }
+    }
+
+    if (isReplace) {
+        node.remove();
+        $insertNodes(nodes);
     }
 }
 
-function useTemplateVars(editor) {
+const processTemplate = (template, node) => {
+    const newNodes = [];
+    if (!$isTemplateVarNode(node)) {
+        const textContent = node.getTextContent();
+        const splitText = textContent.split(template.marker);
+        if (splitText.length > 1) {
+            for (let i = 0; i < splitText.length; i++) {
+                const prevText = splitText[i];
+                if (prevText) {
+                    const prevNode = $createTextNode(prevText);
+                    newNodes.push(prevNode);
+                }
+                if (i !== splitText.length - 1) {
+                    const templateNode = $createTemplateVarNode(
+                        template.marker,
+                        template.display,
+                        template.color
+                    );
+                    newNodes.push(templateNode);
+                }
+            }
+        }
+    }
+    return newNodes;
+};
+
+function templateVarTransformOLD(node, templates) {
+    let textContent = node.getTextContent();
+
+    const nodes = [];
+    let isReplace = false;
+    templates.forEach((template) => {
+        if (!isReplace && textContent.indexOf(template.marker) > -1) {
+            isReplace = true;
+            const splitText = textContent.split(template.marker);
+
+            const prevText = splitText.shift();
+            const prevNode = $createTextNode(prevText);
+            const templateNode = $createTemplateVarNode(
+                template.marker,
+                template.display,
+                template.color
+            );
+
+            nodes.push(prevNode);
+            nodes.push(templateNode);
+            //if (splitText.length) {
+            const postText = splitText.join(template.marker);
+            if (postText) {
+                const postNode = $createTextNode(postText);
+                nodes.push(postNode);
+            }
+            // }
+            //$insertNodes(nodes);
+        }
+    });
+
+    //const parent = node.getParent();
+    if (isReplace) {
+        node.remove();
+        $insertNodes(nodes);
+    }
+}
+
+function useTemplateVars(editor, templates) {
     useEffect(() => {
-        const removeTransform = editor.registerNodeTransform(
-            TextNode,
-            templateVarTransform
+        const removeTransform = editor.registerNodeTransform(TextNode, (node) =>
+            templateVarTransform(node, templates)
         );
         return () => {
             removeTransform();
@@ -23,8 +123,8 @@ function useTemplateVars(editor) {
     }, [editor]);
 }
 
-export default function TemplateVarPlugin() {
+export default function TemplateVarPlugin({ templates }) {
     const [editor] = useLexicalComposerContext();
-    useTemplateVars(editor);
+    useTemplateVars(editor, templates);
     return null;
 }
