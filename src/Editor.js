@@ -244,7 +244,7 @@ const HtmlViewer = () => {
     const [markdown, setMarkdown] = useState("");
 
     const handleOnChange = (editorState, editor) => {
-        const jsonString = JSON.stringify(editorState, null, 4); //JSON.stringify(editorState);
+        const jsonString = JSON.stringify(editorState, null, 4);
         setJson(jsonString);
         //console.log("jsonString", jsonString);
 

@@ -1,4 +1,4 @@
-import { TextNode, SerializedTextNode, Spread, DOMExportOutput } from "lexical";
+import { TextNode } from "lexical";
 
 export class TemplateVarNode extends TextNode {
     static getType() {
@@ -52,7 +52,7 @@ export class TemplateVarNode extends TextNode {
 
     exportDOM() {
         const element = document.createElement("span");
-        element.textContent = this.__marker; //'[FIRST_NAME]';
+        element.textContent = this.__marker;
         return { element };
     }
 
@@ -61,7 +61,7 @@ export class TemplateVarNode extends TextNode {
             ...super.exportJSON(),
             type: "templateVar",
             version: 1,
-            text: this.__marker, //'[FIRST_NAME]'
+            text: this.__marker,
         };
 
         return temp;

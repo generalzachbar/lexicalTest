@@ -7,12 +7,11 @@ import { TextNode, $createTextNode, $insertNodes } from "lexical";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 
 function templateVarTransform(node, templates) {
-    //let textContent = node.getTextContent();
-
     const nodes = [node];
     let isReplace = false;
     let rerun = true;
     let breakout = false;
+    // TODO optimize this spaghetti
     while (rerun === true) {
         rerun = false;
         for (let outer = 0; outer < nodes.length; outer++) {
@@ -21,7 +20,6 @@ function templateVarTransform(node, templates) {
                 break;
             }
             for (let index = 0; index < templates.length; index++) {
-                //templates.forEach((template) => {
                 let processedNodes = processTemplate(
                     templates[index],
                     nodes[outer]
@@ -32,13 +30,8 @@ function templateVarTransform(node, templates) {
                     isReplace = true;
                     breakout = true;
                     break;
-                    //replace the node with the processed nodes
-                    // processedNodes.forEach(node=>{
-
-                    // });
                 }
             }
-            // });
         }
     }
 
@@ -74,43 +67,38 @@ const processTemplate = (template, node) => {
     return newNodes;
 };
 
-function templateVarTransformOLD(node, templates) {
-    let textContent = node.getTextContent();
+// function templateVarTransformOLD(node, templates) {
+//     let textContent = node.getTextContent();
+//     const nodes = [];
+//     let isReplace = false;
+//     templates.forEach((template) => {
+//         if (!isReplace && textContent.indexOf(template.marker) > -1) {
+//             isReplace = true;
+//             const splitText = textContent.split(template.marker);
 
-    const nodes = [];
-    let isReplace = false;
-    templates.forEach((template) => {
-        if (!isReplace && textContent.indexOf(template.marker) > -1) {
-            isReplace = true;
-            const splitText = textContent.split(template.marker);
+//             const prevText = splitText.shift();
+//             const prevNode = $createTextNode(prevText);
+//             const templateNode = $createTemplateVarNode(
+//                 template.marker,
+//                 template.display,
+//                 template.color
+//             );
 
-            const prevText = splitText.shift();
-            const prevNode = $createTextNode(prevText);
-            const templateNode = $createTemplateVarNode(
-                template.marker,
-                template.display,
-                template.color
-            );
+//             nodes.push(prevNode);
+//             nodes.push(templateNode);
+//             const postText = splitText.join(template.marker);
+//             if (postText) {
+//                 const postNode = $createTextNode(postText);
+//                 nodes.push(postNode);
+//             }
+//         }
+//     });
 
-            nodes.push(prevNode);
-            nodes.push(templateNode);
-            //if (splitText.length) {
-            const postText = splitText.join(template.marker);
-            if (postText) {
-                const postNode = $createTextNode(postText);
-                nodes.push(postNode);
-            }
-            // }
-            //$insertNodes(nodes);
-        }
-    });
-
-    //const parent = node.getParent();
-    if (isReplace) {
-        node.remove();
-        $insertNodes(nodes);
-    }
-}
+//     if (isReplace) {
+//         node.remove();
+//         $insertNodes(nodes);
+//     }
+// }
 
 function useTemplateVars(editor, templates) {
     useEffect(() => {
