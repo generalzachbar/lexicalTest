@@ -11,7 +11,7 @@ function templateVarTransform(node, templates) {
     let isReplace = false;
     let rerun = true;
     let breakout = false;
-    // TODO optimize this spaghetti
+    // TODO optimize this if possible
     while (rerun === true) {
         rerun = false;
         for (let outer = 0; outer < nodes.length; outer++) {
@@ -67,48 +67,18 @@ const processTemplate = (template, node) => {
     return newNodes;
 };
 
-// function templateVarTransformOLD(node, templates) {
-//     let textContent = node.getTextContent();
-//     const nodes = [];
-//     let isReplace = false;
-//     templates.forEach((template) => {
-//         if (!isReplace && textContent.indexOf(template.marker) > -1) {
-//             isReplace = true;
-//             const splitText = textContent.split(template.marker);
-
-//             const prevText = splitText.shift();
-//             const prevNode = $createTextNode(prevText);
-//             const templateNode = $createTemplateVarNode(
-//                 template.marker,
-//                 template.display,
-//                 template.color
-//             );
-
-//             nodes.push(prevNode);
-//             nodes.push(templateNode);
-//             const postText = splitText.join(template.marker);
-//             if (postText) {
-//                 const postNode = $createTextNode(postText);
-//                 nodes.push(postNode);
-//             }
-//         }
-//     });
-
-//     if (isReplace) {
-//         node.remove();
-//         $insertNodes(nodes);
-//     }
-// }
-
 function useTemplateVars(editor, templates) {
     useEffect(() => {
-        const removeTransform = editor.registerNodeTransform(TextNode, (node) =>
-            templateVarTransform(node, templates)
+        const transform = (node) => templateVarTransform(node, templates);
+
+        const removeTransform = editor.registerNodeTransform(
+            TextNode,
+            transform
         );
         return () => {
             removeTransform();
         };
-    }, [editor]);
+    }, [editor, templates]);
 }
 
 export default function TemplateVarPlugin({ templates }) {
