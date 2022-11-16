@@ -21,20 +21,18 @@ export class TemplateVarNode extends TextNode {
     }
 
     createDOM(config) {
-        const dom = document.createElement("span");
-        const inner = super.createDOM(config);
-        inner.className = `badge text-dark bg-${this.__color}`;
-        inner.textContent = this.__text;
-        dom.appendChild(inner);
+        const dom = super.createDOM(config);
+        dom.classList.add(...["badge", "text-dark", `bg-${this.__color}`]);
+        dom.textContent = this.__text;
         return dom;
     }
 
     updateDOM(prevNode, dom, config) {
-        const inner = dom.firstChild;
-        if (inner === null) {
-            return true;
-        }
-        super.updateDOM(prevNode, inner, config);
+        // const inner = dom.firstChild;
+        // if (inner === null) {
+        //     return true;
+        // }
+        super.updateDOM(prevNode, dom, config);
         return false;
     }
 
@@ -50,8 +48,8 @@ export class TemplateVarNode extends TextNode {
         return node;
     }
 
-    exportDOM() {
-        const element = document.createElement("span");
+    exportDOM(editor) {
+        const { element } = super.exportDOM(editor);
         element.textContent = this.__marker;
         return { element };
     }
@@ -78,11 +76,12 @@ export function $createTemplateVarNode(marker, display, color) {
 
 export const TEMPLATE_VAR = {
     dependencies: [TemplateVarNode],
-    export: (node) => {
+    export: (node, exportChildren, exportFormat) => {
         if (!$isTemplateVarNode(node)) {
             return null;
         }
-        return node.__marker;
+
+        return exportFormat(node, node.__marker);
     },
     importRegExp: /\[(\S*)\]/g,
     regExp: /\[(\S*)\]/g,
